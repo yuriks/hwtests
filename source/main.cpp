@@ -5,6 +5,7 @@
 #include "tests/fs/fs.h"
 #include "tests/cpu/cputests.h"
 #include "tests/kernel/kernel.h"
+#include "tests/gpu/gpu.h"
 
 static unsigned int test_counter = 0;
 static TestCaller tests[] = {
@@ -12,6 +13,7 @@ static TestCaller tests[] = {
     CPU::Integer::TestAll,
     CPU::Memory::TestAll,
     Kernel::TestAll,
+    GPU::TestAll
 };
 
 int main(int argc, char** argv)
