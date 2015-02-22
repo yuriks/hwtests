@@ -22,6 +22,10 @@ enum PixelFormat {
         OUT_RGBA4  = 4 << 12,
 };	
 
+enum Flags {
+        HORIZONTAL_DOWNSCALE = 1 << 24,
+};
+
 union Dimensions {
     struct {
         u16 height;
@@ -317,6 +321,53 @@ static bool RGBA8_To_RGBA4(u32* input, u32* output) {
     return true;
 }
 
+static bool RGBA8_To_RGBA8_Scaled_Blending(u32* input, u32* output) {
+    memset(output, 0, 0x4000 * 4);
+    memset(input, 0, 0x4000 * 4);
+    
+    *input = 0xFF000000; //Input
+    *output = 0; //Output
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x40, 0x40), IN_RGBA8 | OUT_RGBA8 | HORIZONTAL_DOWNSCALE);
+    TestEquals(*output, (u32)0x7F000000);
+    
+    // It doesn't average the pixels when the bit 24 isn't enabled
+    *input = 0xFF000000; //Input
+    *output = 0; //Output
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x40, 0x40), IN_RGBA8 | OUT_RGBA8);
+    TestEquals(*output, (u32)0xFF000000);
+    
+    *input = 0xFFFF0000; //Input
+    *output = 0; //Output
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x40, 0x40), IN_RGBA8 | OUT_RGBA8 | HORIZONTAL_DOWNSCALE);
+    TestEquals(*output, (u32)0x7F7F0000);
+    
+    *input = 0xFFFF0000; //Input
+    input[1] = 0xFF000000;
+    *output = 0; //Output
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x40, 0x40), IN_RGBA8 | OUT_RGBA8 | HORIZONTAL_DOWNSCALE);
+    input[1] = 0;
+    TestEquals(*output, (u32)0xFF7F0000);
+    
+    *input = 0xFFFF0000; //Input
+    input[1] = 0xFF0000FF;
+    *output = 0; //Output
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x40, 0x40), IN_RGBA8 | OUT_RGBA8 | HORIZONTAL_DOWNSCALE);
+    input[1] = 0;
+    TestEquals(*output, (u32)0xFF7F007F);
+    
+    *input = 0xFFFF0000; //Input
+    input[1] = 0x00FF0000; //Input
+    input[2] = 0xFF000000;
+    *output = 0; //Output
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x40, 0x40), IN_RGBA8 | OUT_RGBA8 | HORIZONTAL_DOWNSCALE);
+    input[1] = 0;
+    input[2] = 0;
+    TestEquals(*output, (u32)0x7FFF0000);
+    TestEquals(output[0x20], (u32)0x7F000000);  // Why did the output end up at offset 0x20?
+    output[0x20] = 0;
+    return true;
+}
+
 void TestAll() {
     const std::string tag = "DisplayTransfer";
  
@@ -330,6 +381,7 @@ void TestAll() {
     Test(tag, "RGBA8_To_RGBA4", RGBA8_To_RGBA4(input, output), true);
     Test(tag, "RGB5A1_To_RGBA4", RGB5A1_To_RGBA4(input, output), true);
     Test(tag, "RGBA4_To_RGB5A1", RGBA4_To_RGB5A1(input, output), true);
+    Test(tag, "RGBA8_To_RGBA8_Scaled_Blending", RGBA8_To_RGBA8_Scaled_Blending(input, output), true);
     
     linearFree(input);
     linearFree(output);
