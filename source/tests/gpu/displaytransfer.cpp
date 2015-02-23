@@ -10,20 +10,23 @@ namespace GPU {
 namespace DisplayTransfer {
     
 enum PixelFormat {
-        IN_RGBA8  = 0 << 8,
-        IN_RGB8   = 1 << 8,
-        IN_RGB565 = 2 << 8,
-        IN_RGB5A1 = 3 << 8,
-        IN_RGBA4  = 4 << 8,
-        OUT_RGBA8  = 0 << 12,
-        OUT_RGB8   = 1 << 12,
-        OUT_RGB565 = 2 << 12,
-        OUT_RGB5A1 = 3 << 12,
-        OUT_RGBA4  = 4 << 12,
+    IN_RGBA8  = 0 << 8,
+    IN_RGB8   = 1 << 8,
+    IN_RGB565 = 2 << 8,
+    IN_RGB5A1 = 3 << 8,
+    IN_RGBA4  = 4 << 8,
+    OUT_RGBA8  = 0 << 12,
+    OUT_RGB8   = 1 << 12,
+    OUT_RGB565 = 2 << 12,
+    OUT_RGB5A1 = 3 << 12,
+    OUT_RGBA4  = 4 << 12,
 };	
 
 enum Flags {
-        HORIZONTAL_DOWNSCALE = 1 << 24,
+    LINEAR_TO_TILED = 1 << 1,
+    RAW_COPY = 1 << 3,
+    UNKNOWN1 = 1 << 16,
+    HORIZONTAL_DOWNSCALE = 1 << 24,
 };
 
 union Dimensions {
@@ -587,9 +590,76 @@ static bool Test_ZCurve(u32* input, u32* output) {
     input[13] = 0xAAAAAA;
     *output = 0;
     DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGBA8 | OUT_RGBA8);
+    for (int i = 0; i < 0x4000; ++i) {
+        if (output[i] != 0) {
+            Log(GFX_BOTTOM, Common::FormatString("ZC: Found %04X - %08X \r\n", i, output[i]));
+        }
+    }
     TestEquals(output[0 * 0x80 + 1], (u32)0xABCDEu);
     TestEquals(output[1 * 0x80 + 0], (u32)0xDEF00u);
     TestEquals(output[2 * 0x80 + 3], (u32)0xAAAAAA);
+    
+    memset(output, 0, 0x4000 * 4);
+    memset(input, 0, 0x4000 * 4);
+    
+    input[0 * 0x80 + 1] = 0xABCDE;
+    input[1 * 0x80 + 0] = 0xDEF00;
+    input[2 * 0x80 + 3] = 0xAAAAAA;
+    *output = 0;
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGBA8 | OUT_RGBA8 | LINEAR_TO_TILED);
+    TestEquals(output[1], (u32)0xABCDEu);
+    TestEquals(output[2], (u32)0xDEF00u);
+    TestEquals(output[13], (u32)0xAAAAAA);
+    return true;
+}
+
+static bool Test_Flags_Bit_16(u32* input, u32* output) {
+    memset(output, 0, 0x4000 * 4);
+    memset(input, 0, 0x4000 * 4);
+    
+    input[1] = 0xABCDE;
+    input[2] = 0xDEF00;
+    input[13] = 0xAAAAAA;
+    *output = 0;
+    // Test bit 16, seems to do nothing?
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGBA8 | OUT_RGBA8 | UNKNOWN1);
+    for (int i = 0; i < 0x4000; ++i) {
+        if (output[i] != 0) {
+            Log(GFX_BOTTOM, Common::FormatString("TestBits16: Found %04X - %08X \r\n", i, output[i]));
+        }
+    }
+    TestEquals(output[0 * 0x80 + 1], (u32)0xABCDEu);
+    TestEquals(output[1 * 0x80 + 0], (u32)0xDEF00u);
+    TestEquals(output[2 * 0x80 + 3], (u32)0xAAAAAA);
+    return true;
+}
+
+static bool Test_Raw_Copy(u32* input, u32* output) {
+    memset(output, 0, 0x4000 * 4);
+    memset(input, 0, 0x4000 * 4);
+    
+    input[1] = 0xABCDE;
+    input[2] = 0xDEF00;
+    input[13] = 0xAAAAAA;
+    *output = 0;
+    // Test that it doesn't do any kind of conversion
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGBA8 | OUT_RGB8 | RAW_COPY);
+    TestEquals(output[1], (u32)0xABCDEu);
+    TestEquals(output[2], (u32)0xDEF00u);
+    TestEquals(output[13], (u32)0xAAAAAA);
+    
+    memset(output, 0, 0x4000 * 4);
+    memset(input, 0, 0x4000 * 4);
+    
+    input[1] = 0xABCDE;
+    input[2] = 0xDEF00;
+    input[13] = 0xAAAAAA;
+    *output = 0;
+    // Test that it doesn't do linear->tiled transfer either
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGBA8 | OUT_RGB8 | LINEAR_TO_TILED | RAW_COPY);
+    TestEquals(output[1], (u32)0xABCDEu);
+    TestEquals(output[2], (u32)0xDEF00u);
+    TestEquals(output[13], (u32)0xAAAAAA);
     return true;
 }
 
@@ -620,6 +690,8 @@ void TestAll() {
     Test(tag, "RGBA8_To_RGBA8_Scaled_Blending", RGBA8_To_RGBA8_Scaled_Blending(input, output), true);
     Test(tag, "RGBA8_To_RGB8_Different_Sizes", RGBA8_To_RGB8_Different_Sizes(input, output), true);
     Test(tag, "Test_ZCurve", Test_ZCurve(input, output), true);
+    Test(tag, "Test_Raw_Copy", Test_Raw_Copy(input, output), true);
+    Test(tag, "Test_Flags_Bit_16", Test_Flags_Bit_16(input, output), true);
     
     linearFree(input);
     linearFree(output);
