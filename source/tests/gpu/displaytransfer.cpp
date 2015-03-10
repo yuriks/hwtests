@@ -44,7 +44,7 @@ static void DisplayTransferAndWait(u32* input, u32* output, Dimensions input_dim
     GSPGPU_InvalidateDataCache(nullptr, (u8*)output, sizeof(u32));
     Result res = GX_SetDisplayTransfer(nullptr, (u32*)input, input_dimensions.raw, (u32*)output, output_dimensions.raw, flags);
     if ((u32)res != 0) {
-        Log(GFX_BOTTOM, Common::FormatString("Something went wrong: %u\r\n", (u32)res));
+        Log(Common::FormatString("Something went wrong: %u\n", (u32)res));
         return;
     }
     gfxFlushBuffers();
