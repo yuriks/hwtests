@@ -27,6 +27,7 @@ enum Flags {
     RAW_COPY = 1 << 3,
     UNKNOWN1 = 1 << 16,
     HORIZONTAL_DOWNSCALE = 1 << 24,
+    DOUBLE_DOWNSCALE = 1 << 25,
 };
 
 union Dimensions {
@@ -537,6 +538,14 @@ static bool RGBA8_To_RGBA8_Scaled_Blending(u32* input, u32* output) {
     TestEquals(*output, (u32)0x7FFF0000);
     TestEquals(output[0x40], (u32)0x7F000000);
     output[0x20] = 0;
+    
+    // Double downscale downscales the input in both directions (horizontal and vertical)
+    *input = 0xFFFF0000; //Input
+    input[1] = 0xFF0000FF;
+    *output = 0; //Output
+    DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGBA8 | OUT_RGBA8 | DOUBLE_DOWNSCALE);
+    input[1] = 0;
+    TestEquals(*output, (u32)0x7F3F003F); // Blends 4 adjacent pixels together
     return true;
 }
 
