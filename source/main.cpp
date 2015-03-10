@@ -21,17 +21,18 @@ int main(int argc, char** argv)
     gfxInitDefault();
     InitOutput();
 
-    ClearScreens();
-    Print(GFX_TOP, "Press A to begin...\n");
+    consoleClear();
+    Print("Press A to begin...\n");
 
     while (aptMainLoop()) {
-        DrawBuffers();
+        gfxFlushBuffers();
+        gfxSwapBuffers();
 
         hidScanInput();
         if (hidKeysDown() & KEY_START) {
             break;
         } else if (hidKeysDown() & KEY_A) {
-            ClearScreens();
+            consoleClear();
 
             if (test_counter < (sizeof(tests) / sizeof(tests[0]))) {
                 tests[test_counter]();
@@ -40,15 +41,15 @@ int main(int argc, char** argv)
                 break;
             }
 
-            Log(GFX_TOP, "\n");
-            Print(GFX_TOP, "Press A to continue...\n");
+            Log("\n");
+            Print("Press A to continue...\n");
         }
 
         gspWaitForEvent(GSPEVENT_VBlank0, false);
     }
 
-    ClearScreens();
-    
+    consoleClear();
+
     gfxExit();
     DeinitOutput();
 	
