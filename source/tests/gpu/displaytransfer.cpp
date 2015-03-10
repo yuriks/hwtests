@@ -537,7 +537,7 @@ static bool RGBA8_To_RGBA8_Scaled_Blending(u32* input, u32* output) {
     input[2] = 0;
     TestEquals(*output, (u32)0x7FFF0000);
     TestEquals(output[0x40], (u32)0x7F000000);
-    output[0x20] = 0;
+    output[0x40] = 0;
     
     // Double downscale downscales the input in both directions (horizontal and vertical)
     *input = 0xFFFF0000; //Input
