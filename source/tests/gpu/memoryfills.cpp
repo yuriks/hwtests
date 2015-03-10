@@ -11,7 +11,7 @@ namespace MemoryFills {
 
 static void FillAndWait(u8* buffer, u32 value, u32 size, u32 control, bool first_engine = true) {
     if (first_engine) {
-        GX_SetMemoryFill(nullptr, (u32*)buffer, value, (u32*)(buffer + size), control, 0, 0, 0, control);
+        GX_SetMemoryFill(nullptr, (u32*)buffer, value, (u32*)(buffer + size), control, 0, 0, 0, 0);
         gspWaitForPSC0();
     } else {
         GX_SetMemoryFill(nullptr, 0, 0, 0, control, (u32*)buffer, value, (u32*)(buffer + size), control);
@@ -20,7 +20,7 @@ static void FillAndWait(u8* buffer, u32 value, u32 size, u32 control, bool first
     GSPGPU_InvalidateDataCache(nullptr, buffer, size);
 }
 
-static bool Fill32bits(u8* buffer) {
+static bool Fill32Bits(u8* buffer) {
     FillAndWait(buffer, 0x00FFFFFF, 48, 0x201, false);
     TestEquals(buffer[0], 0xFFu);
     TestEquals(buffer[1], 0xFFu);
@@ -47,7 +47,7 @@ static bool Fill32bits(u8* buffer) {
     return true;
 }
 
-static bool Fill24bits(u8* buffer) {
+static bool Fill24Bits(u8* buffer) {
     FillAndWait(buffer, 0x00FFFFFF, 48, 0x101);
     TestEquals(buffer[0], 0xFFu);
     TestEquals(buffer[1], 0xFFu);
@@ -81,8 +81,8 @@ void TestAll() {
     
     u8* buffer = (u8*)vramAlloc(0x400);
     
-    Test(tag, "Fill24bits", Fill24bits(buffer), true);
-    Test(tag, "Fill32bits", Fill32bits(buffer), true);
+    Test(tag, "Fill24Bits", Fill24Bits(buffer), true);
+    Test(tag, "Fill32Bits", Fill32Bits(buffer), true);
     
     vramFree(buffer);
 }
