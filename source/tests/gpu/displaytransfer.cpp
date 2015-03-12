@@ -326,21 +326,21 @@ static bool RGB8_To_RGB565(u32* input, u32* output) {
     //Test Red Input
     *input = 0xFF0000; //Input
     *output = 0; //Output
-    Log(GFX_BOTTOM, "Preparing first");
+    Log("Preparing first\n");
     DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGB8 | OUT_RGB565);
     TestEquals(*output, (u32)0xF800);
 
     //Test Green Input
     *input = 0x00FF00; //Input
     *output = 0; //Output
-    Log(GFX_BOTTOM, "Preparing second");
+    Log("Preparing second\n");
     DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGB8 | OUT_RGB565);
     TestEquals(*output, (u32)0x07E0);
 
     //Test Blue Input
     *input = 0x0000FF; //Input
     *output = 0; //Output
-    Log(GFX_BOTTOM, "Preparing third");
+    Log("Preparing third\n");
     DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGB8 | OUT_RGB565);
     TestEquals(*output, (u32)0x001F);
     return true;
@@ -601,7 +601,7 @@ static bool Test_ZCurve(u32* input, u32* output) {
     DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGBA8 | OUT_RGBA8);
     for (int i = 0; i < 0x4000; ++i) {
         if (output[i] != 0) {
-            Log(GFX_BOTTOM, Common::FormatString("ZC: Found %04X - %08X \r\n", i, output[i]));
+            Log(Common::FormatString("ZC: Found %04X - %08X\n", i, output[i]));
         }
     }
     TestEquals(output[0 * 0x80 + 1], (u32)0xABCDEu);
@@ -634,7 +634,7 @@ static bool Test_Flags_Bit_16(u32* input, u32* output) {
     DisplayTransferAndWait(input, output, Dimensions(0x80, 0x80), Dimensions(0x80, 0x80), IN_RGBA8 | OUT_RGBA8 | UNKNOWN1);
     for (int i = 0; i < 0x4000; ++i) {
         if (output[i] != 0) {
-            Log(GFX_BOTTOM, Common::FormatString("TestBits16: Found %04X - %08X \r\n", i, output[i]));
+            Log(Common::FormatString("TestBits16: Found %04X - %08X\n", i, output[i]));
         }
     }
     TestEquals(output[0 * 0x80 + 1], (u32)0xABCDEu);
