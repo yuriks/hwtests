@@ -43,7 +43,7 @@ static bool Add() {
                   "ORRVS %[out], %[out], #4\n"
                   "ORRNE %[out], %[out], #8" : [out] "+r"(badflags), [Rm] "+r"(rm) : [Rn] "r"(rn));
     if (badflags != 0)
-        return false; 
+        return false;
 
     // TODO: ADC, ADCS, ADDW variants.
 
@@ -208,7 +208,7 @@ static bool Usada8() {
     asm volatile ("USADA8 %[out], %[Rm], %[Rn], %[Ra]" : [out] "=r"(output) : [Rm] "r"(rm), [Rn] "r"(rn), [Ra] "r"(ra));
     SoftAssert(output == 41);
 
-    // Absolute value subtraction with accumulator add: abs(0 - 1) + 9 
+    // Absolute value subtraction with accumulator add: abs(0 - 1) + 9
     rm = 0;
     rn = 1;
     ra = 9;

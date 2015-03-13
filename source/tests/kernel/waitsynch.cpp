@@ -481,7 +481,7 @@ bool Test_WaitSynchN_17() {
     res = svcWaitSynchronizationN(&output, mutexes, 1, 0, ONE_SECOND / 2);
     SoftAssert(output == -1);
     SoftAssert(res == ERR_TIMEOUT);
-    
+
     // Make sure we do get mutex 1
     res = svcWaitSynchronizationN(&output, mutexes, 2, 0, U64_MAX);
     SoftAssert(output == 1);
@@ -557,7 +557,7 @@ bool Test_WaitSynchN_18() {
 }
 
 // WaitSynchN wait_all=true; unlocked mutex0, unlocked mutex1; Make sure both mutexes are locked and
-// it does not wait 
+// it does not wait
 
 void thread6_handler(void*) {
     s32 output = 0;
@@ -656,7 +656,7 @@ void thread8_handler(void*) {
 }
 
 // WaitSynchN wait_all=true; signaled event0, unlocked mutex0; Make sure mutex0 locks and it does
-// not wait  
+// not wait
 
 bool Test_WaitSynchN_21() {
     s32 output = 0;
@@ -923,10 +923,10 @@ void thread12_handler(void*)
 {
     svcWaitSynchronization(mutexes[0], U64_MAX);
     svcSignalEvent(events[0]);
-    
+
     svcSleepThread(ONE_SECOND/2);
     svcReleaseMutex(mutexes[0]);
-    
+
     svcWaitSynchronization(events[1], U64_MAX);
     svcExitThread();
 }
@@ -1129,7 +1129,7 @@ void TestAll() {
     svcCloseHandle(events[1]);
     svcCloseHandle(events[2]);
     svcCloseHandle(events[3]);
-    
+
     svcCloseHandle(mutexes[0]);
     svcCloseHandle(mutexes[1]);
 
