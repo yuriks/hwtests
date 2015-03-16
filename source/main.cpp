@@ -52,6 +52,6 @@ int main(int argc, char** argv)
 
     gfxExit();
     DeinitOutput();
-	
+
     return 0;
 }
