@@ -2,6 +2,7 @@ build/
 *.3dsx
 *.3ds
 *.elf
+*.smdh
 
 .DS_Store
 

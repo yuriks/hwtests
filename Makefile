@@ -28,7 +28,8 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/common source/tests source/tests/fs source/tests/cpu source/tests/kernel source/tests/gpu
+SOURCES		:=	source source/common source/tests source/tests/fs source/tests/cpu \
+				source/tests/kernel source/tests/gpu source/tests/y2r
 DATA		:=	data
 INCLUDES	:=	source
 
