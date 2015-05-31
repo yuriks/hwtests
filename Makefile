@@ -153,7 +153,10 @@ $(OUTPUT).elf	:	$(OFILES)
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------
 %.bin.o	:	%.bin
-#---------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	@$(bin2o)
+
+%.yuv.o	:	%.yuv
 	@echo $(notdir $<)
 	@$(bin2o)
 

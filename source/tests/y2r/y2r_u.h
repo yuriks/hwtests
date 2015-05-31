@@ -42,6 +42,18 @@ enum StandardCoefficient : u8
     COEFFICIENT_MAX = 0x4,
 };
 
+struct ConversionParams {
+    InputFormat input_format;
+    OutputFormat output_format;
+    Rotation rotation;
+    BlockAlignment block_alignment;
+    u16 input_line_width;
+    u16 input_lines;
+    StandardCoefficient standard_coefficient;
+    u8 reserved;
+    u16 alpha;
+};
+
 Result y2rInit();
 Result y2rExit();
 
@@ -58,6 +70,8 @@ Result Y2RU_SetSendingY(Handle* servhandle, const u8* src_buf, u32 image_size, u
 Result Y2RU_SetSendingU(Handle* servhandle, const u8* src_buf, u32 image_size, u16 transfer_unit,
     u16 transfer_stride, Handle src_process);
 Result Y2RU_SetSendingV(Handle* servhandle, const u8* src_buf, u32 image_size, u16 transfer_unit,
+    u16 transfer_stride, Handle src_process);
+Result Y2RU_SetSendingYUV(Handle* servhandle, const u8* src_buf, u32 image_size, u16 transfer_unit,
     u16 transfer_stride, Handle src_process);
 Result Y2RU_SetReceiving(Handle* servhandle, u8* dst_buf, u32 image_size, u16 transfer_unit,
     u16 transfer_stride, Handle dst_process);
