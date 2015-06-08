@@ -85,6 +85,7 @@ Result Y2RU_SetInputLineWidth(Handle* servhandle, u16 line_width);
  * In practice, sets the height of the image
  */
 Result Y2RU_SetInputLines(Handle* servhandle, u16 num_lines);
+Result Y2RU_SetCoefficient(Handle* servhandle, const u16* coefficient);
 Result Y2RU_SetStandardCoefficient(Handle* servhandle, StandardCoefficient coefficient);
 
 /* Sets transparency of the resulting image */

@@ -1,6 +1,7 @@
 #include "y2r_u.h"
 
 #include <cstdlib>
+#include <cstring>
 
 #include <3ds.h>
 
@@ -217,6 +218,19 @@ Result Y2RU_SetInputLines(Handle* servhandle, u16 num_lines)
     u32* cmdbuf = getThreadCommandBuffer();
     cmdbuf[0] = 0x001C0040;
     cmdbuf[1] = (u32)num_lines;
+
+    if ((ret = svcSendSyncRequest(*servhandle)) != 0) return ret;
+    return (Result)cmdbuf[1];
+}
+
+Result Y2RU_SetCoefficient(Handle* servhandle, const u16* coefficient)
+{
+    if (!servhandle) servhandle = &y2rHandle;
+
+    Result ret = 0;
+    u32* cmdbuf = getThreadCommandBuffer();
+    cmdbuf[0] = 0x001E0100;
+	memcpy(&cmdbuf[1], coefficient, 16);
 
     if ((ret = svcSendSyncRequest(*servhandle)) != 0) return ret;
     return (Result)cmdbuf[1];
