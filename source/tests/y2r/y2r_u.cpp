@@ -159,7 +159,7 @@ Result Y2RU_SetSendingV(Handle* servhandle, const u8* src_buf, u32 image_size, u
     return (Result)cmdbuf[1];
 }
 
-Result Y2RU_SetSendingYUV(Handle* servhandle, const u8* src_buf, u32 image_size, u16 transfer_unit,
+Result Y2RU_SetSendingYUYV(Handle* servhandle, const u8* src_buf, u32 image_size, u16 transfer_unit,
     u16 transfer_stride, Handle src_process)
 {
     if (!servhandle) servhandle = &y2rHandle;

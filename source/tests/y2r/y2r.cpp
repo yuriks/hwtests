@@ -105,7 +105,7 @@ void ConvertY2R(const u8* yuv_input, const char* name, const ConversionParams& p
     }
 
     if (params.input_format == INPUT_YUV422_BATCH) {
-        Check(Y2RU_SetSendingYUV(NULL, yuv_input, src_Y_size, src_Y_size / img_h, 0, 0xFFFF8001));
+        Check(Y2RU_SetSendingYUYV(NULL, yuv_input, src_Y_size, src_Y_size / img_h, 0, 0xFFFF8001));
     } else {
         const u8* src_Y = yuv_input;
         const u8* src_U = src_Y + src_Y_size;

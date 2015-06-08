@@ -71,7 +71,7 @@ Result Y2RU_SetSendingU(Handle* servhandle, const u8* src_buf, u32 image_size, u
     u16 transfer_stride, Handle src_process);
 Result Y2RU_SetSendingV(Handle* servhandle, const u8* src_buf, u32 image_size, u16 transfer_unit,
     u16 transfer_stride, Handle src_process);
-Result Y2RU_SetSendingYUV(Handle* servhandle, const u8* src_buf, u32 image_size, u16 transfer_unit,
+Result Y2RU_SetSendingYUYV(Handle* servhandle, const u8* src_buf, u32 image_size, u16 transfer_unit,
     u16 transfer_stride, Handle src_process);
 Result Y2RU_SetReceiving(Handle* servhandle, u8* dst_buf, u32 image_size, u16 transfer_unit,
     u16 transfer_stride, Handle dst_process);
