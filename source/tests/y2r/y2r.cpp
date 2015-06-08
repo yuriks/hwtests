@@ -8,7 +8,7 @@
 #include "y2r_u.h"
 
 #include "output.h"
-#include "common/stb_image_write.h"
+#include "common/lodepng.h"
 #include "common/string_funcs.h"
 #include "yuv_random_bin.h"
 
@@ -129,8 +129,9 @@ void ConvertY2R(const u8* yuv_input, const char* name, const ConversionParams& p
         std::swap(rgb_buf[i + 0], rgb_buf[i + 2]);
     }
     char filename_buffer[128];
-    snprintf(filename_buffer, sizeof(filename_buffer), "/y2r_output/%s.bmp", name);
-    stbi_write_bmp(filename_buffer, img_w, img_h, 3, rgb_buf.get());
+    snprintf(filename_buffer, sizeof(filename_buffer), "/y2r_output/%s.png", name);
+    unsigned png_result = lodepng_encode24_file(filename_buffer, rgb_buf.get(), img_w, img_h);
+    Print(Common::FormatString("[%u] %s\n", png_result, lodepng_error_text(png_result)));
 }
 
 void ConvertY2R(const u8* yuv_input, const char* name,
